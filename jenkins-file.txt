@@ -6,7 +6,7 @@ pipeline {
 	stages {
 	    stage('Git CheckOut') {
 		    steps {
-			   git branch: 'main', url: 'https://github.com/ShobhitPatkar360/JenkinsAutomation.git'
+			   git branch: 'main', url: 'https://github.com/ShobhitPatkar360/WebAppForJenkins.git'
 			}
 		}
         stage('Clean and Install') {
