@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+	tools {
+	    maven "maven-3.9.6"
+	 	}
+	stages {
+	    stage('Git CheckOut') {
+		    steps {
+			   git branch: 'main', url: 'https://github.com/ShobhitPatkar360/JenkinsAutomation.git'
+			}
+		}
+        stage('Clean and Install') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        stage ('Package'){
+            steps {
+                sh 'mvn package'
+             }
+        }
+	stage ('Server'){
+            steps {
+               rtServer (
+                 id: "Artifactory",
+                 url: 'https://amazingworld.jfrog.io/artifactory',
+                 username: 'John',
+                  password: 'Passowrd@123.',
+                  bypassProxy: true,
+                   timeout: 300
+                        )
+            }
+        }
+        stage('Upload'){
+            steps{
+                rtUpload (
+                 serverId:"Artifactory" ,
+                  spec: '''{
+                   "files": [
+                      {
+                      "pattern": "*.war",
+                      "target": "jenkins-demo-lab-libs-snapshot-local"
+                      }
+                            ]
+                           }''',
+                        )
+            }
+        }
+        stage ('Publish build info') {
+            steps {
+                rtPublishBuildInfo (
+                    serverId: "Artifactory"
+                )
+            }
+        }
+    }
+}
